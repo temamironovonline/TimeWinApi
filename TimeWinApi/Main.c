@@ -130,9 +130,6 @@ void getTimer(int* forTimer)
 		{
 			scanf_s("%d", &option);
 			printf("Таймер закончил работу!\n");
-			SuspendThread(workWithTime[11]);
-			ResumeThread(workWithTime[10]);
-			SuspendThread(workWithTime[9]);
 			SuspendThread(workWithTime[8]);
 		}
 		Sleep(1000);
@@ -143,6 +140,12 @@ void showTimer(int* forTimer)
 {
 	while (1)
 	{
+		if (forTimer[2] == 0 && forTimer[1] == 0 && forTimer[0] == 0)
+		{
+			SuspendThread(workWithTime[11]);
+			ResumeThread(workWithTime[10]);
+			SuspendThread(workWithTime[9]);
+		}
 		printf("%d:%d:%d\n", forTimer[0], forTimer[1], forTimer[2]);
 		Sleep(950);
 	}
