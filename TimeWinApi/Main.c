@@ -22,6 +22,7 @@ int option; // Для вариантов выбора при взаимодействии с пользователем
 time_t rawtime;
 struct tm* timeinfo;
 
+
 int main(void)
 {
 	system("chcp 1251>n");
@@ -128,11 +129,10 @@ void getTimer(int* forTimer)
 		}
 		if (forTimer[2] == 0 && forTimer[1] == 0 && forTimer[0] == 0)
 		{
-			scanf_s("%d", &option);
 			printf("Таймер закончил работу!\n");
 			SuspendThread(workWithTime[8]);
 		}
-		Sleep(1000);
+		Sleep(999);
 	}
 }
 
@@ -142,12 +142,18 @@ void showTimer(int* forTimer)
 	{
 		if (forTimer[2] == 0 && forTimer[1] == 0 && forTimer[0] == 0)
 		{
-			SuspendThread(workWithTime[11]);
-			ResumeThread(workWithTime[10]);
-			SuspendThread(workWithTime[9]);
+			BOOL a = 1;
+
+			a = CancelIoEx(workWithTime[11], NULL);
+			int b = GetLastError();
+			printf("wdwd");
+			//SuspendThread(workWithTime[11]);
+			//ResumeThread(workWithTime[10]);
+			//SuspendThread(workWithTime[9]);
 		}
+		CancelIo(workWithTime[9]);
 		printf("%d:%d:%d\n", forTimer[0], forTimer[1], forTimer[2]);
-		Sleep(950);
+		Sleep(1000);
 	}
 }
 
@@ -350,7 +356,7 @@ void getCurrentTime(int* forTimeArray) // Подсчет времени
 
 		if (forTimeArray[0] == 24) forTimeArray[0] = 0;
 
-		Sleep(1000);
+		Sleep(999);
 	}
 }
 
@@ -359,7 +365,7 @@ void showCurrentTime(int* forTimeArray) // Показ времени
 	while (1)
 	{
 		printf("%d:%d:%d\n", forTimeArray[0], forTimeArray[1], forTimeArray[2]);
-		Sleep(950);
+		Sleep(1000);
 	}
 }
 
