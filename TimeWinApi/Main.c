@@ -53,11 +53,11 @@ int main(void)
 
 	for (int i = 0; i < 3; i++) timer[i] = 0;
 
-	workWithTime[7] = CreateThread(NULL, 0, setTimer, timer, CREATE_SUSPENDED, 0); // Поток для запуска таймера
-	workWithTime[8] = CreateThread(NULL, 0, getTimer, timer, CREATE_SUSPENDED, 0); // Поток для запуска таймера
-	workWithTime[9] = CreateThread(NULL, 0, showTimer, timer, CREATE_SUSPENDED, 0); // Поток для запуска таймера
+	workWithTime[7] = CreateThread(NULL, 0, setTimer, timer, CREATE_SUSPENDED, 0); // Поток для установки значений таймера
+	workWithTime[8] = CreateThread(NULL, 0, getTimer, timer, CREATE_SUSPENDED, 0); // Поток для подсчета таймера
+	workWithTime[9] = CreateThread(NULL, 0, showTimer, timer, CREATE_SUSPENDED, 0); // Поток для показа таймера
 	workWithTime[10] = CreateThread(NULL, 0, runTimer, timer, CREATE_SUSPENDED, 0); // Поток для запуска таймера
-	workWithTime[11] = CreateThread(NULL, 0, settingsTimer, timer, CREATE_SUSPENDED, 0); // Поток для запуска таймера
+	workWithTime[11] = CreateThread(NULL, 0, settingsTimer, timer, CREATE_SUSPENDED, 0); // Поток для настройки таймера
 
 	WaitForMultipleObjects(1, workWithTime, TRUE, INFINITE);
 
@@ -140,20 +140,12 @@ void showTimer(int* forTimer)
 {
 	while (1)
 	{
-		if (forTimer[2] == 0 && forTimer[1] == 0 && forTimer[0] == 0)
+		if (forTimer[2] == 0 && forTimer[1] == 0 && forTimer[0] == 0) SuspendThread(workWithTime[9]);
+		else
 		{
-			BOOL a = 1;
-
-			a = CancelIoEx(workWithTime[11], NULL);
-			int b = GetLastError();
-			printf("wdwd");
-			//SuspendThread(workWithTime[11]);
-			//ResumeThread(workWithTime[10]);
-			//SuspendThread(workWithTime[9]);
+			printf("%d:%d:%d\n", forTimer[0], forTimer[1], forTimer[2]);
+			Sleep(1000);
 		}
-		CancelIo(workWithTime[9]);
-		printf("%d:%d:%d\n", forTimer[0], forTimer[1], forTimer[2]);
-		Sleep(1000);
 	}
 }
 
@@ -162,19 +154,20 @@ void settingsTimer(int* forTimer)
 	while (1)
 	{
 		printf("0 - назад, 1 - сбросить таймер, 2 - пауза, 3 - возобновить таймер\n");
-
 		scanf_s("%d", &option);
 
 		switch (option)
 		{
 		case 0:
 			ResumeThread(workWithTime[10]);
+			ResumeThread(workWithTime[9]);
 			SuspendThread(workWithTime[9]);
 			SuspendThread(workWithTime[11]);
 			break;
 		case 1:
 			printf("Таймер сброшен!\n");
 			for (int i = 0; i < 3; i++) forTimer[i] = 0;
+			ResumeThread(workWithTime[9]);
 			SuspendThread(workWithTime[9]);
 			SuspendThread(workWithTime[8]);
 			ResumeThread(workWithTime[10]);
@@ -182,6 +175,7 @@ void settingsTimer(int* forTimer)
 			break;
 		case 2:
 			SuspendThread(workWithTime[8]);
+			ResumeThread(workWithTime[9]);
 			SuspendThread(workWithTime[9]);
 			break;
 		case 3:
